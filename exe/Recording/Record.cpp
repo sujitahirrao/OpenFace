@@ -13,22 +13,22 @@
 //       not limited to academic journal and conference publications, technical
 //       reports and manuals, must cite at least one of the following works:
 //
-//       OpenFace: an open source facial behavior analysis toolkit
-//       Tadas Baltrušaitis, Peter Robinson, and Louis-Philippe Morency
-//       in IEEE Winter Conference on Applications of Computer Vision, 2016  
+//       OpenFace 2.0: Facial Behavior Analysis Toolkit
+//       Tadas Baltrušaitis, Amir Zadeh, Yao Chong Lim, and Louis-Philippe Morency
+//       in IEEE International Conference on Automatic Face and Gesture Recognition, 2018  
+//
+//       Convolutional experts constrained local model for facial landmark detection.
+//       A. Zadeh, T. Baltrušaitis, and Louis-Philippe Morency,
+//       in Computer Vision and Pattern Recognition Workshops, 2017.    
 //
 //       Rendering of Eyes for Eye-Shape Registration and Gaze Estimation
 //       Erroll Wood, Tadas Baltrušaitis, Xucong Zhang, Yusuke Sugano, Peter Robinson, and Andreas Bulling 
 //       in IEEE International. Conference on Computer Vision (ICCV),  2015 
 //
-//       Cross-dataset learning and person-speci?c normalisation for automatic Action Unit detection
+//       Cross-dataset learning and person-specific normalisation for automatic Action Unit detection
 //       Tadas Baltrušaitis, Marwa Mahmoud, and Peter Robinson 
 //       in Facial Expression Recognition and Analysis Challenge, 
 //       IEEE International Conference on Automatic Face and Gesture Recognition, 2015 
-//
-//       Constrained Local Neural Fields for robust facial landmark detection in the wild.
-//       Tadas Baltrušaitis, Peter Robinson, and Louis-Philippe Morency. 
-//       in IEEE Int. Conference on Computer Vision Workshops, 300 Faces in-the-Wild Challenge, 2013.    
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -43,14 +43,11 @@
 
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
-#include <opencv2/videoio/videoio.hpp>  // Video write
-#include <opencv2/videoio/videoio_c.h>  // Video write
 
 #include <stdio.h>
 #include <time.h>
 
-#include <filesystem.hpp>
-#include <filesystem/fstream.hpp>
+#include <filesystem>
 
 #define INFO_STREAM( stream ) \
 std::cout << stream << std::endl
@@ -70,8 +67,6 @@ static void printErrorAndAbort( const std::string & error )
 #define FATAL_STREAM( stream ) \
 printErrorAndAbort( std::string( "Fatal error: " ) + stream )
 
-using namespace std;
-
 // Get current date/time, format is YYYY-MM-DD.HH:mm:ss
 const std::string currentDateTime() {
     time_t     now = time(0);
@@ -85,14 +80,14 @@ const std::string currentDateTime() {
     return buf;
 }
 
-vector<string> get_arguments(int argc, char **argv)
+std::vector<std::string> get_arguments(int argc, char **argv)
 {
 
-	vector<string> arguments;
+	std::vector<std::string> arguments;
 
 	for(int i = 1; i < argc; ++i)
 	{
-		arguments.push_back(string(argv[i]));
+		arguments.push_back(std::string(argv[i]));
 	}
 	return arguments;
 }
@@ -100,10 +95,10 @@ vector<string> get_arguments(int argc, char **argv)
 int main (int argc, char **argv)
 {
 
-	vector<string> arguments = get_arguments(argc, argv);
+	std::vector<std::string> arguments = get_arguments(argc, argv);
 
 	// Some initial parameters that can be overriden from command line	
-	string outroot, outfile;
+	std::string outroot, outfile;
 
 	TCHAR NPath[200];
 	GetCurrentDirectory(200, NPath);
@@ -152,16 +147,16 @@ int main (int argc, char **argv)
 	cv::Mat img;
 	vCap >> img;
 			
-	boost::filesystem::path dir(outroot);
-	boost::filesystem::create_directory(dir);
+	std::filesystem::path dir(outroot);
+	std::filesystem::create_directory(dir);
 
-	string out_file = outroot + outfile;
+	std::string out_file = outroot + outfile;
 	// saving the videos
-	cv::VideoWriter video_writer(out_file, CV_FOURCC('D','I','V','X'), 30, img.size(), true);
+	cv::VideoWriter video_writer(out_file, cv::VideoWriter::fourcc('D','I','V','X'), 30, img.size(), true);
 
-	ofstream outlog;
-	outlog.open((outroot + outfile + ".log").c_str(), ios_base::out);
-	outlog << "frame, time(ms)" << endl;
+	std::ofstream outlog;
+	outlog.open((outroot + outfile + ".log").c_str(), std::ios_base::out);
+	outlog << "frame, time(ms)" << std::endl;
 
 	double freq = cv::getTickFrequency();
 
@@ -180,7 +175,7 @@ int main (int argc, char **argv)
 		video_writer << img;
 
 		outlog << frameProc + 1 << " " << curr_time;
-		outlog << endl;
+		outlog << std::endl;
 						
 		
 		cv::imshow("rec", img);

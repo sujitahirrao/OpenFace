@@ -23,11 +23,11 @@
 #include <opencv2/imgcodecs.hpp>
 #include <opencv2/highgui/highgui.hpp>
 
-// IplImage stuff
-#include <opencv2/core/core_c.h>
-#include <opencv2/imgproc/imgproc_c.h>
+// dlib dependencies for face detection
+#include <dlib/image_processing/frontal_face_detector.h>
+#include <dlib/opencv.h>
 
-// C++ stuff
+// C++ standard stuff
 #include <stdio.h>
 
 #include <fstream>
@@ -40,8 +40,35 @@
 #define _USE_MATH_DEFINES
 #include <cmath>
 
-// Boost stuff
-#include <filesystem.hpp>
-#include <filesystem/fstream.hpp>
+// Filesystem stuff
+// It can either be in std filesystem (C++17), or in experimental/filesystem (partial C++17 support) or in boost
+#if __has_include(<boost/filesystem.hpp>)
+#include <boost/filesystem.hpp>
+#include <boost/filesystem/fstream.hpp>
+namespace fs = boost::filesystem;
+#elif __has_include(<filesystem>)
+#include <filesystem>
+namespace fs = std::filesystem;
+#elif __has_include(<experimental/filesystem>)
+#include <experimental/filesystem>
+namespace fs = std::filesystem;
+#endif
+
+// OpenBLAS stuff
+
+#include <openblas_config.h>
+// Instead of including cblas.h and f77blas.h (the definitions from OpenBLAS and other BLAS libraries differ, declare the required OpenBLAS functionality here)
+#ifdef __cplusplus
+extern "C" {
+	/* Assume C declarations for C++ */
+#endif  /* __cplusplus */
+
+	/*Set the number of threads on runtime.*/
+	void openblas_set_num_threads(int num_threads);
+
+	void sgemm_(char *, char *, blasint *, blasint *, blasint *, float *,
+		float  *, blasint *, float  *, blasint *, float  *, float  *, blasint *);
+}
+
 
 #endif
